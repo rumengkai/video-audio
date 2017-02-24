@@ -1,0 +1,78 @@
+*{padding: 0;margin: 0;box-sizing: border-box;}
+//video{display: block;margin: 0 auto;}
+html,body{width: 100%;height: 100%;background-color: #eee;}
+.box{
+     width: 1024px;
+     height: 576px;
+//  border: 10px solid #f66;
+    background: #000 url() 0 0 no-repeat;
+    margin: 0px auto;
+    position: relative;
+    video{
+        display: block;
+        position: absolute;
+        top:0;
+        left:0;
+        bottom:0;
+        right: 0;
+    }
+    
+    .controls{
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        height: 40px;
+        background-color: rgba(0,0,0,0.6);
+        box-shadow: 0 -1px 1px #fff;
+        display: flex;
+        
+        .playImg,.playTime,.playRange,.muted,.volRange,.fullscreen{
+            flex: 1;
+            text-align: center;
+            color: #efefef;
+            line-height: 40px;
+            img{
+                width: 24px;
+                margin-top: 8px;
+            }
+            
+        }
+        .playTime{
+            flex:2;
+        }
+        .playRange{
+            flex:8;
+            padding-top: 4px;
+            input{
+                width: 100%;
+            }
+        }
+        .volRange{
+            flex:2;
+            padding-top: 4px;
+            input{
+                width: 100%;
+            }
+        }
+        
+    }
+}
+#speed{
+    width: 500px;
+    height:30px;
+    margin:0px auto;
+    input{
+        margin-left: 20px;
+        width: 30px;
+        height:20px;
+    }  
+}
+#filebox{
+    width: 550px;
+    height:30px;
+    margin:0px auto;
+    input{
+        margin-left: 20px;
+        height:20px;
+    } 
+}

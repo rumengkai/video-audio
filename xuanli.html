@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			body{
+				background-color: #000000;
+				margin:0;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+			var canvas = document.createElement("canvas");
+			var context = canvas.getContext("2d");
+			var canvasWidth = window.innerWidth;
+			var canvasHeight = window.innerHeight;
+			var particles = [];
+			init();
+			
+			function init(){
+				document.body.appendChild(canvas);
+				canvas.width = canvasWidth;
+				canvas.height = canvasHeight;
+				setInterval(loop,1000/30);
+			}
+			
+			function loop(){
+				context.fillStyle = "rgba(0,0,0,1)";
+				context.fillRect(0,0,canvasWidth,canvasHeight);
+				var particle = new Particle(canvasWidth*0.5,canvasHeight*0.5);
+				particle.xVel = Math.random()*4-2;
+				particles.push(particle);
+				
+				for(var i = 0;i<particles.length;i++){
+					var particle = particles[i];
+					particle.render(context);
+					particle.update();
+				}
+				
+				if(particles.length > 1000){
+					particles.shift();
+				}
+				
+			}
+			
+			function Particle(xPos,yPos){
+				this.xPos = xPos;
+				this.yPos = yPos;
+				this.yVel = -5;
+				this.xVel = 0;
+				this.gravity = 0.1;
+				this.counter = 0;//影响颜色
+				
+				
+				this.render = function(ctx){
+					/*
+					 H(Hue):表示颜色的类型(例如红色,绿色或者黄色).取值范围为0—360.
+					 其中每一个值代表一种颜色.
+ 					S(Saturation):颜色的饱和度.从0到1.有时候也称为纯度.(0表示灰度图,1表示纯的颜色) 
+ 					B(Brightness or Value):颜色的明亮程度.从0到1.(0表示黑色,1表示特定饱和度的颜色) */
+					ctx.fillStyle = "hsl("+this.counter+",100%,50%)";
+					//ctx.fillStyle = getRandomColor();
+					ctx.beginPath();
+	  				ctx.arc(this.xPos,this.yPos,5,0,Math.PI*2,true);
+	  				ctx.fill();
+				}
+				
+				this.update = function(){
+					this.yVel += this.gravity;
+					this.xPos += this.xVel;
+					this.yPos += this.yVel;
+					this.counter += 2;
+				}
+				
+			}
+			/*这个实现非常逆天，我们知道hex颜色值是从#000000到#ffffff，
+			 * 后面那六位数是16进制数，相当于“0x000000”到“0xffffff”。
+			 * 这实现的思路是将hex的最大值ffffff先转换为10进制，
+			 * 进行random后再转换回16进制。我们看一下，如何得到16777215 这个数值的。
+			 *  window.onload = function () {
+     				alert(parseInt("0xffffff",16).toString(10));
+  				};
+			 * */
+			function getRandomColor(){
+				return '#'+Math.floor(Math.random()*16777215).toString(16); 
+			}
+		</script>
+	</body>
+</html>

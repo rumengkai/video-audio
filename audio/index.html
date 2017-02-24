@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>音乐播放器-茹孟凯</title>
+	<meta charset="UTF-8">
+	<meta name="Author" content="rmk">
+	<link rel="stylesheet" type="text/css" href="css/music.css" />
+</head>
+<body>
+	<audio src="music/演员 - 薛之谦.mp3" type="audio/mpeg">
+		您的浏览器不支持 audio 元素。
+	</audio>
+	<div class="box" id="box">
+		<div id="music">
+			<div class="topinfo">
+				音乐播放器
+			</div>
+			<div class="pan">
+				<img id="zhen" src="images/cd_tou.png" class="rotate" alt="">
+				<img id="panimg" src="images/img.jpg" alt="">
+			</div>
+			<div id="mList">
+				<ul>
+					<!-- <li>第1首<span class="0">演员 - 薛之谦</span></li>
+					<li>第2首<span class="1">丑八怪 - 薛之谦</span></li>
+					<li>第3首<span class="2">认真的雪 - 薛之谦</span></li>
+					<li>第4首<span class="3">一半 - 薛之谦</span></li>
+					<li>第5首<span class="4">绅士 - 薛之谦</span></li> -->
+				</ul>
+			</div>
+		</div>
+		<div class="controls" id="controls">
+			<div class="playImg">
+				<span id="pre">上</span>
+				<img src="img/pause.png" alt="" id="playImg"/>
+				<span id="next">下</span>
+			</div>
+			<div class="playTime">
+				<span id="currentTime">00:00</span>/<span id="allTime">00:00</span>
+			</div>
+			<div class="playRange">
+				<input type="range" name="playRange" id="playRange" min="0" step="1" value="0" />
+			</div>
+			<div class="muted" >
+				<img src="img/vol.png" id="muted"/>
+			</div>
+			<div class="volRange">
+				<input type="range" name="volRange" id="volRange" min="0" max="10" step="1"  value="" />
+			</div>
+			<div class="fullscreen" >
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		//歌曲列表
+		var musicList=["music/演员 - 薛之谦.mp3",
+						"music/丑八怪 - 薛之谦.mp3",
+						"music/认真的雪 - 薛之谦.mp3",
+						"music/一半 - 薛之谦.mp3",
+						"music/绅士 - 薛之谦.mp3"];
+		var source=document.getElementsByTagName("source")[0];
+		var audio=document.getElementsByTagName("audio")[0];
+		var box = document.getElementById("box");
+		var playRange = document.getElementById("playRange");
+		var muted = document.getElementById("muted");
+		var volRange = document.getElementById("volRange");
+		var currentTime = document.getElementById("currentTime");
+		var allTime = document.getElementById("allTime");
+		var playImg=document.getElementById('playImg');
+		var voice=document.getElementById('voice');
+		var zhen=document.getElementById("zhen");
+		var panimg=document.getElementById("panimg");
+		var pre=document.getElementById("pre");
+		var next=document.getElementById("next");
+		var mList=document.getElementById("mList");
+		mList.children[0].innerHTML="";
+		var str="";
+		for (var i = 0; i < musicList.length; i++) {
+			var music=musicList[i].replace(/music\/|\.mp3/g,"");
+			str+='<li>第'+(1+i)+'首<span class="'+i+'">'+music+'</span></li>';
+		}
+		mList.children[0].innerHTML=str;
+		
+		//默认音量
+		var volume = 1;
+		//总时长
+		var allTimes = 0;
+		//当前歌曲
+		var currentMusic=0;
+		
+		//点击播放按钮，执行播放的函数
+		playImg.onclick=play;
+		//点击播放暂停按钮的方法
+		function play(){
+			allTimes = audio.duration;
+			if (isNaN(allTimes)==false) {
+				allTime.innerHTML=getTimes(allTimes);
+				//设置滑块总时长
+				playRange.setAttribute("max",Math.ceil(allTimes));
+			}
+			//设置正在播放的歌曲
+			for (var i = 0; i < musicList.length; i++) {
+				mList.children[0].children[i].setAttribute('class','');
+			}
+			mList.children[0].children[currentMusic].setAttribute('class','foucs');
+			if(audio.paused){
+				audio.play();
+				playImg.src = "img/play.png";
+				zhen.setAttribute('class','');
+				panimg.setAttribute('class','rotateimg');
+			}else{
+				audio.pause();
+				playImg.src = "img/pause.png";
+				zhen.setAttribute('class','rotate');
+				panimg.setAttribute('class','');
+			}
+		}
+		//点击歌曲播放
+		for (var i = 0; i <musicList.length; i++) {
+			(function (i) {
+				mList.children[0].children[i].children[0].onclick=function musicPlay(e) {
+					// console.log(e.target.getAttribute("class"));
+					currentMusic=e.target.getAttribute("class");
+					audio.setAttribute("src",musicList[currentMusic]);
+					play();
+				}
+			})(i)
+		}
+		
+		
+		//下一首
+		next.onclick=nextPlay;
+		function nextPlay() {
+			if (currentMusic>=4) {
+				currentMusic=0;
+			}else{
+				currentMusic++;
+			}
+			audio.setAttribute("src",musicList[currentMusic]);
+			play();
+		}
+		//上一首
+		pre.onclick=prePlay;
+		function prePlay() {
+			if (currentMusic==0) {
+				currentMusic=4;
+			}else{
+				currentMusic--;
+			}
+			audio.setAttribute("src",musicList[currentMusic]);
+			play();
+		}
+		//监听视频的播放
+		audio.addEventListener("timeupdate",playTime,true);
+		function playTime(){
+			//audio.currentTime获取视频播放时间
+			var currentTimes = audio.currentTime;
+			//改变滑块
+			playRange.value = Math.floor(currentTimes);
+			//改变currentTime
+			currentTime.innerHTML = getTimes(currentTimes);
+			//如果播放完毕，则需要更改播放按钮状态---重置操作
+			if(currentTimes == allTimes){
+				zhen.setAttribute('class','rotate');
+				panimg.setAttribute('class','');
+				playImg.src = "img/pause.png";
+				playRange.value = 0;
+				currentTime.innerHTML = "00:00";
+				if (currentMusic>=4) {
+					currentMusic=0;
+				}else{
+					currentMusic++;
+				}
+				audio.setAttribute("src",musicList[currentMusic]);
+				play();
+			}
+			allTimes = audio.duration;
+			if (isNaN(allTimes)==false) {
+				allTime.innerHTML=getTimes(allTimes);
+				//设置滑块总时长
+				playRange.setAttribute("max",Math.ceil(allTimes));
+			}
+		}
+		//滑动滑块改变播放进度
+		playRange.onchange = playRangeChange;
+		function playRangeChange(){
+			var val = this.value;
+			audio.currentTime = val;
+		}
+		// 是否静音
+		muted.onclick = mutedFn;
+		function mutedFn(){
+			console.log(audio.muted);
+			if(!audio.muted){
+				audio.volume = 0;
+				volRange.value=0;
+				muted.src = "img/novol.png";
+				audio.muted=true;
+			}else{
+				console.log(volume);
+				audio.volume = volume;
+				muted.src = "img/vol.png";
+				audio.muted=false;
+				volRange.value=volume*10;
+			}
+		}
+		//音量改变
+		volRange.onchange = volChange;
+		function volChange(){
+			var val = this.value;
+			audio.volume = val/10;
+			volume = val/10;
+			if(val == 0){
+				audio.volume = 0;
+				volume = 0;
+				muted.src = "img/novol.png";
+				isMuted = false;
+			}else{
+				audio.volume = volume;
+
+				muted.src = "img/vol.png";
+				isMuted = true;
+			}
+		}
+		//格式化时间
+		function getTimes(time){
+			var h = parseInt(time/3600);
+			var m = parseInt((time - h*3600)/60);
+			var s = Math.ceil(time - h*3600 - m*60);
+			h = h==0 ? "" : "0"+ h +":";
+			m = m<10 ? "0"+m+":" : m+":";
+			s = s < 10 ? "0"+ s:s;
+			return h + m + s;
+		}
+	</script>
+</body>
+</html>
